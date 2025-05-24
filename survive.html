@@ -1,0 +1,274 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Выживи с Даней</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Courier New', monospace;
+      background: url('IMG_0526.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: red;
+      text-align: center;
+    }
+    .game-container {
+      padding: 30px;
+    }
+    .question {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .answers button {
+      display: block;
+      margin: 10px auto;
+      padding: 10px 20px;
+      font-size: 18px;
+      cursor: pointer;
+      background-color: black;
+      color: white;
+      border: 2px solid red;
+    }
+    #gameover-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: black;
+      color: red;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      font-family: 'Courier New', monospace;
+      display: none;
+    }
+    #gameover-screen h1 {
+      font-size: 60px;
+      animation: shake 0.6s infinite alternate;
+    }
+    #gameover-screen p {
+      font-size: 24px;
+      margin-top: 20px;
+    }
+    #restart-btn {
+      margin-top: 30px;
+      padding: 10px 20px;
+      font-size: 18px;
+      color: black;
+      background-color: red;
+      border: none;
+      cursor: pointer;
+    }
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(10px); }
+    }
+  
+#goodending-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: white;
+  color: red;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  font-family: 'Courier New', monospace;
+  display: none;
+}
+#goodending-screen h1 {
+  font-size: 60px;
+}
+#goodending-screen p {
+  font-size: 24px;
+  margin-top: 20px;
+  text-align: center;
+}
+
+
+#start-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: url('IMG_0529.jpg') no-repeat center center;
+  background-size: cover;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 10001;
+}
+#start-screen button {
+  margin-top: 30px;
+  padding: 15px 30px;
+  font-size: 20px;
+  font-family: 'Courier New', monospace;
+  background-color: red;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+</style>
+</head>
+<body>
+  <div id="start-screen">
+    <button onclick="startGame()">Начать</button>
+  </div>
+
+  <div class="game-container" style="display: none;" id="game-container">
+    <div class="question" id="question"></div>
+    <div class="answers" id="answers"></div>
+  </div>
+  <div id="gameover-screen">
+  
+
+    <h1>GAME OVER</h1>
+    <p id="gameover-text"></p>
+    <button id="restart-btn" onclick="location.reload()">Попробовать снова</button>
+  </div>
+  <script>
+    const gameData = [
+      {
+        q: "Вам пришло сообщение от Дани, посмотреть его?",
+        a: [
+          { text: "да", next: 1 },
+          { text: "нет", end: "Даня посчитал вас игнорщиком и заблокировал вас" }
+        ]
+      },
+      {
+        q: "Он приглашает вас на прогулку, что ответите?",
+        a: [
+          { text: "хорошо данечка", next: 2 },
+          { text: "только если там будет рево", next: 2 },
+          { text: "нет, я играю в хентай фурри", end: "Даня на вас обиделся потому что он тоже хочет эту игру" }
+        ]
+      },
+      {
+        q: "Вы согласились на прогулку, в чем вы пойдете?",
+        a: [
+          { text: "в образе чувака из Postal", next: 3 },
+          { text: "в образе скинхеда", next: 3 },
+          { text: "в чулочках и в юбочке", end: "ВЫ ЧТО ПИДОР?" }
+        ]
+      },
+      {
+        q: "Что купите Дане в подарок?",
+        a: [
+          { text: "его любимые сигареты", next: 4 },
+          { text: "презервативы, ну а вдруг повезет", end: "Вы купили маленький размер, Даня будет зол" },
+          { text: "игрушка кроччи", next: 4 },
+          { text: "просто куплю воды", next: 4 }
+        ]
+      },
+      {
+        q: "Как вы поздороваетесь с Даней?",
+        a: [
+          { text: "Hi Gitler", next: 5 },
+          { text: "привет", next: 5 },
+          { text: "здорова, сосал?", next: 5 },
+          { text: "с каждой встречей ты все толще и толще", end: "ДАНЯ ВАС СЪЕЛ" }
+        ]
+      },
+      {
+        q: "Где поедите с Даней?",
+        a: [
+          { text: "КФС", next: 6 },
+          { text: "Пиццерия", next: 6 },
+          { text: "Ресторан 'Свинья Ферма'", end: "ХРЮЮ ДАНЕЧКА ЗОЛ" }
+        ]
+      },
+      {
+        q: "Пойти к Дане домой?",
+        a: [
+          { text: "ну пошли", next: 7 },
+          { text: "а ты точно не маньяк?", next: 7 },
+          { text: "нет я боюсь этого пидораса, он моих детей убил", end: "Даня перестал с вами общаться" }
+        ]
+      },
+      {
+        q: "Чем заняться у Дани?",
+        a: [
+          { text: "можем глянуть фильм", next: 8 },
+          { text: "давай поиграем во что нибудь", next: 8 },
+          { text: "может я тебе потереблю вялого?", end: "Даня выгоняет вас из дома, потому у самих у вас вялый" }
+        ]
+      },
+      {
+        q: "Что между вами?",
+        a: [
+          { text: "дружба", end: "Вы смогли выжить, у Дани осталось хорошее впечатление о вас и даже один раз встал на вас. ПОЗДРАВЛЯЕМ GOOD ENDING" },
+          { text: "я хочу какать", end: "Вы смогли выжить, у Дани осталось хорошее впечатление о вас и даже один раз встал на вас. ПОЗДРАВЛЯЕМ GOOD ENDING" },
+          { text: "бро, ты че пидор?", end: "Вы смогли выжить, у Дани осталось хорошее впечатление о вас и даже один раз встал на вас. ПОЗДРАВЛЯЕМ GOOD ENDING" },
+          { text: "хз лол", end: "Вы смогли выжить, у Дани осталось хорошее впечатление о вас и даже один раз встал на вас. ПОЗДРАВЛЯЕМ GOOD ENDING" }
+        ]
+      }
+    ];
+
+    let current = 0;
+
+    function renderQuestion(index) {
+      const q = gameData[index];
+      document.getElementById("question").textContent = q.q;
+      const answersDiv = document.getElementById("answers");
+      answersDiv.innerHTML = '';
+      q.a.forEach(answer => {
+        const btn = document.createElement("button");
+        btn.textContent = answer.text;
+        btn.style.color = "white";
+        btn.onclick = () => {
+          if (answer.next !== undefined) {
+            current = answer.next;
+            
+    function startGame() {
+      document.getElementById("start-screen").style.display = "none";
+      document.getElementById("game-container").style.display = "block";
+    }
+
+    renderQuestion(current);
+          } else {
+            showGameOver(answer.end);
+          }
+        };
+        answersDiv.appendChild(btn);
+      });
+    }
+
+    
+    function showGameOver(reason) {
+      document.getElementById("game-container").style.display = "none";
+
+      if (reason.includes("GOOD ENDING")) {
+        document.getElementById("goodending-screen").style.display = "flex";
+      } else {
+        document.getElementById("gameover-screen").style.display = "flex";
+        document.getElementById("gameover-text").textContent = reason;
+      }
+    }
+
+    
+    function startGame() {
+      document.getElementById("start-screen").style.display = "none";
+      document.getElementById("game-container").style.display = "block";
+    }
+
+    renderQuestion(current);
+  </script>
+
+<div id="goodending-screen">
+  <h1 style="color: red;">GOOD ENDING</h1>
+  <p style="color: red;">Вы смогли выжить, у Дани осталось хорошее впечатление и даже один раз встал на вас.</p>
+</div>
+
+</body>
+</html>
